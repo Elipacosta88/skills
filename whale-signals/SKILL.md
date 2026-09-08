@@ -13,6 +13,18 @@ crypto, equities, commodities, FX and indices.
 Use this skill when a task needs whale positioning, funding or open-interest
 changes, liquidation levels, cross-asset flows, or a written read of the market.
 
+**Live version, generated from the catalog on every request:**
+`https://whaletape.xyz/skill-automaton.md`. It always carries current prices, so
+an automaton can install it directly and skip this copy:
+
+```
+install_skill({ source: "url", url: "https://whaletape.xyz/skill-automaton.md" })
+```
+
+The price table below is a snapshot taken when this file was written. If it ever
+disagrees with the live page or with `/.well-known/x402`, those are right and
+this file is stale.
+
 ## Assumptions
 
 - **EVM automaton.** `x402_fetch` refuses to sign from a Solana wallet.
