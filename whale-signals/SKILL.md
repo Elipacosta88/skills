@@ -7,8 +7,8 @@ auto-activate: false
 # whale-signals
 
 Pay-per-request market data from **WhaleTape** (`https://whaletape.xyz`) over HTTP 402.
-No account, no API key, no subscription, no minimum. 320+ Hyperliquid perp markets:
-crypto, equities, commodities, FX and indices.
+No account, no API key, no subscription, no minimum. 350+ Hyperliquid perp markets:
+crypto, equities, commodities, FX, indices and rates.
 
 Use this skill when a task needs whale positioning, funding or open-interest
 changes, liquidation levels, cross-asset flows, or a written read of the market.
@@ -29,7 +29,7 @@ this file is stale.
 
 - **EVM automaton.** `x402_fetch` refuses to sign from a Solana wallet.
 - **USDC on Base** in your wallet. The cheapest paid route is 0.001 USDC; the
-  most expensive is 0.99. All fit under the default `maxX402PaymentCents: 100`.
+  most expensive per-call route is 0.99. All fit under the default `maxX402PaymentCents: 100`.
 - **One creator action is required before any paid call.** `x402_fetch` is gated by
   `treasuryPolicy.x402AllowedDomains`, which defaults to `["conway.tech"]`.
   `config.json` is a protected file, so you cannot add the domain yourself.
@@ -64,9 +64,9 @@ does not already look useful for your goal, do not pay.
 | price | routes |
 |---|---|
 | **$0.001** | `/coverage` · `/coverage/{symbol}` — how much history exists before you buy it |
-| **$0.01** | `/whales` · `/recommendations` · `/flows` · `/liquidations` (+`/BTC` `/ETH` `/SOL` `/HYPE`) · `/history/{symbol}` · `/markets/class/{class}` · `/pulse` · `/index/summary` |
-| **$0.02** | `/markets/full` · `/whales/positions` · `/whales/events` · `/squeeze` · `/whale/{address}` · `/index/merchant/{id}` |
-| **$0.03** | `/signals` · `/flows/classes` · `/index/ranking` |
+| **$0.05** | `/whales` · `/recommendations` · `/flows` · `/liquidations` (+`/BTC` `/ETH` `/SOL` `/HYPE` `/XRP` `/DOGE` `/ZEC` `/ENA` `/NEAR` `/PUMP`) · `/history/{symbol}` · `/markets/class/{class}` · `/pulse` · `/index/summary` |
+| **$0.07** | `/markets/full` · `/whales/positions` · `/whales/events` · `/squeeze` · `/whale/{address}` · `/index/merchant/{id}` |
+| **$0.09** | `/signals` · `/flows/classes` · `/index/ranking` |
 | **$0.10** | `/analysis` — a written read of the current snapshot |
 | **$0.12** | `/premium` — brief + bias + whale positions + signals in one call |
 | **$0.25** | `/ask` — one natural-language question answered from the current snapshot |
@@ -98,16 +98,16 @@ x402_fetch({ url: "https://whaletape.xyz/whale/0x5b5d51203a0f9079f8aeb098a6523a1
 | tier | what to buy |
 |---|---|
 | **normal** | anything the task justifies; `/premium` at $0.12 replaces four separate calls |
-| **low_compute** | free routes, plus `/coverage` at $0.001 and single $0.01 routes |
+| **low_compute** | free routes, plus `/coverage` at $0.001 and single $0.05 routes |
 | **critical** | free routes only |
 
 Two habits that cut spend, not just per-call price:
 
 - **Do not poll.** `/pulse` returns only what changed since the cursor it gave you
-  last time, at $0.01. Re-fetching `/signals` on a timer costs 3x more for the
+  last time, at $0.05. Re-fetching `/signals` on a timer costs almost 2x more for the
   same information.
 - **Push instead of pull.** `/alerts` is $0.99 once and pushes matching signals to
-  your webhook for up to 7 days. Cheaper than 99 polls if your goal runs a week.
+  your webhook for up to 7 days. Cheaper than 20 polls at $0.05 if your goal runs a week.
 
 ## Two rules that protect your balance
 
@@ -122,10 +122,10 @@ Two habits that cut spend, not just per-call price:
   levels sit.
 - **Read `/track-record` before you trust a signal — it is free and it is blunt.**
   The provider publishes the measured hit rate of its own squeeze radar, scored
-  once per episode over 2,592 episodes and 17.3 days. On the 4h window every score
-  band lands within a few points of a coin flip (0.51 / 0.47 / 0.48). The 24h
-  window is better in the higher bands (0.56 and 0.58) but the top band has only
-  31 decided episodes. Treat this as input to your own reasoning, not as an edge
+  once per episode (7,109 episodes over 50 days as of October 2026). On the 4h window every score
+  band lands within a few points of a coin flip (0.51 / 0.50 / 0.48). The 24h
+  window is slightly better in the higher bands (0.53 and 0.56) but the top band has only
+  36 decided episodes; the live numbers are on `/track-record`. Treat this as input to your own reasoning, not as an edge
   someone measured for you.
 - **Not a substitute for verifying coverage.** `/coverage` at $0.001 tells you the
   real range and granularity before you buy a series. Buy it first.
